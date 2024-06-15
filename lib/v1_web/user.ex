@@ -57,4 +57,29 @@ defmodule V1Web.User do
       user -> {:ok, user}
     end
   end
+
+  def create(id, params) do
+    case Enum.find(@users, &(&1.id == id)) do
+      nil ->
+        user = params
+        {:ok, user}
+
+      _user ->
+        {:error, %{message: "Could not create, user exists!", details: %{id: id}}}
+    end
+  end
+
+  def update_identity(id, params) do
+    with {:ok, user} <- find(%{id: id}) do
+      {:ok, Map.merge(user, params)}
+    end
+  end
+
+  def update_preferences(id, params) do
+    with {:ok, user} <- find(%{id: id}) do
+      just_preferences = Map.merge(user.preferences, params)
+      user = Map.merge(user, %{preferences: just_preferences})
+      {:ok, user.preferences}
+    end
+  end
 end
